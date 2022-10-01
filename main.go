@@ -5,30 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
-
-type User struct {
-	Name 	string `json:"name"`
-	Bio 	string `json:"bio"`
-	Pass	string `json:"password"`
-	Token	string `json:"token"`
-	Desks	[]Desk `json:"desks"`
-}
-
-type Desk struct {
-	Name	string `json:"name"`
-	Cards	[]Card `json:"cards"`
-}
-
-type Card struct {
-	Quest	string	`json:"quest"`
-	Answer	string	`json:"answer"`
-}
 
 var users = []User{
 	{
@@ -37,6 +20,8 @@ var users = []User{
 		Token: "1",
 	},
 }
+
+var db *gorm.DB
 
 func homeLink(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "API is online")
@@ -51,6 +36,8 @@ func getOneUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAllUsers(w http.ResponseWriter, r *http.Request) {
+	dbUsers := db.Find(&User{})
+	fmt.Println(dbUsers)
 	json.NewEncoder(w).Encode(users)
 }
 
@@ -102,7 +89,7 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	users = append(users, newUser)
 	w.WriteHeader(http.StatusCreated)
 
-	json.NewEncoder(w).Encode(newUser)
+	json.NewEncoder(w).Encode(newUser.Token)
 }
 
 func loginUser(w http.ResponseWriter, r *http.Request) {
@@ -144,21 +131,14 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	router := mux.NewRouter().StrictSlash(true)
+	var err error
+	db, err = gorm.Open(postgres.Open("postgres://postgress@localhost/test"), &gorm.Config{})
 
-	router.HandleFunc("/", homeLink)
+	if err != nil {
+		panic("failed to connect database")
+	  }
+	
+	db.AutoMigrate(&User{})	
 
-	// Authenticated
-	router.HandleFunc("/user/login", loginUser).Methods("POST")
-	router.HandleFunc("/user/register", registerUser).Methods("POST")
-	router.HandleFunc("/user/update", updateUser).Methods("PATCH")
-	router.HandleFunc("/user/delete", deleteUser).Methods("DELETE")
-	router.HandleFunc("/user/desk/create", createDesk).Methods("POST")
-
-	// Public
-	router.HandleFunc("/users", getAllUsers).Methods("GET")
-	router.HandleFunc("/users/{id}", getOneUser).Methods("GET")
-
-
-	log.Fatal(http.ListenAndServe(":8000", router))
+	createRouter()
 }
