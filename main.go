@@ -158,7 +158,7 @@ func main() {
 	config = getConfig()
 
 	var err error
-	connection := postgres.Open("postgres://" + config.Database.Username + "/" + config.Database.Name)
+	connection := postgres.Open("postgres://" + config.Database.Username + "@localhost/" + config.Database.Name)
 	db, err = gorm.Open(connection, &gorm.Config{})
 
 	if err != nil {
