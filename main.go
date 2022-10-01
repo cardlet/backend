@@ -16,14 +16,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var users = []User{
-	{
-		Name: "First User",
-		Bio: "Welcome to my profile",
-		Token: "1",
-	},
-}
-
 var config Config
 var db *gorm.DB
 
@@ -32,11 +24,9 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 }
 
 func getOneUser(w http.ResponseWriter, r *http.Request) {
-	for _, singleUser := range users {
-		if singleUser.Token == mux.Vars(r)["token"] {
-			json.NewEncoder(w).Encode(singleUser)
-		}
-	}
+	var user User
+	db.Find(&user, "ID = ?", mux.Vars(r)["id"])
+	json.NewEncoder(w).Encode(user)
 }
 
 func getAllFromDb() []User {
@@ -50,7 +40,7 @@ func getAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateUser(w http.ResponseWriter, r *http.Request) {
-	i, singleUser, ok := validateUser(r)
+	user, ok := validateUser(r)
 	if !ok {
 		return
 	}
@@ -62,19 +52,20 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Kindly enter data with the user title and description only in order to update")
 	}
 	json.Unmarshal(reqBody, &updatedUser)
+
+	user.Bio = updatedUser.Bio
+	user.Name = updatedUser.Name
+	user.Pass = updatedUser.Pass
 	
-	singleUser.Name = updatedUser.Name
-	singleUser.Bio = updatedUser.Bio
-	users = append(users[:i], *singleUser)
-	json.NewEncoder(w).Encode(singleUser)
+	db.Model(&user).Updates(user)
 }
 
 func deleteUser(w http.ResponseWriter, r *http.Request) {
-	index, _, ok := validateUser(r)
+	user, ok := validateUser(r)
 	if !ok {
 		return
 	}
-	users = append(users[:index], users[index+1:]...)
+	db.Delete(&user, "Token = ?", user.Token)
 }
 
 func GenerateSecureToken(length int) string {
@@ -94,14 +85,15 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	
 	json.Unmarshal(reqBody, &newUser)
 	newUser.Token = GenerateSecureToken(20)
-	users = append(users, newUser)
+	db.Create(&newUser)
+
 	w.WriteHeader(http.StatusCreated)
 
 	json.NewEncoder(w).Encode(newUser.Token)
 }
 
 func loginUser(w http.ResponseWriter, r *http.Request) {
-	_, user, ok := validateUser(r)
+	user, ok := validateUser(r)
 	if !ok {
 		fmt.Fprintf(w, "Access denied")
 		return
@@ -109,18 +101,18 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func validateUser(r *http.Request) (int, *User, bool) {
+func validateUser(r *http.Request) (*User, bool) {
 	var token = r.Header.Get("x-access-token")
-	for i, singleUser := range users {
-		if singleUser.Token == token {
-			return i, &singleUser, true
-		}
+	var user User
+	db.First(&user, "Token = ?", token)
+	if &user != nil {
+		return &user, true
 	}
-	return 0, nil, false
+	return nil, false
 }
 
 func createDesk(w http.ResponseWriter, r *http.Request) {
-	index, user, ok := validateUser(r)
+	user, ok := validateUser(r)
 	if !ok {
 		return
 	}
@@ -133,8 +125,10 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Unmarshal(reqBody, &desk)
-	user.Desks = append(user.Desks, desk)
-	users = append(users[:index], *user)
+	db.Model(&user).Association("Desks").Append(desk)
+
+	fmt.Println(desk)
+
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -165,12 +159,12 @@ func main() {
 		panic("failed to connect database")
 	  }
 	
-	db.AutoMigrate(&User{})	
+	db.AutoMigrate(&User{}, &Desk{}, &Card{})	
 	db.Create(&User{
 		Name: "Zweiter",
 		Bio:  "Ne",
 		Pass: "",
-		Token: GenerateSecureToken(20),
+		Token: "1",
 	})
 
 	createRouter()
