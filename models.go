@@ -22,3 +22,15 @@ type Card struct {
 	Quest	string `json:"quest"`
 	Answer	string `json:"answer"`
 }
+
+type Config struct {
+    Server struct {
+        Port string `yaml:"port"`
+        Host string `yaml:"host"`
+    } `yaml:"server"`
+    Database struct {
+        Username string `yaml:"user"`
+        Password string `yaml:"pass"`
+		Name string `yaml:"name"`
+    } `yaml:"database"`
+}

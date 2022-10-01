@@ -20,6 +20,7 @@ require (
 	github.com/rs/cors v1.8.2 // indirect
 	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be // indirect
 	golang.org/x/text v0.3.7 // indirect
+	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/postgres v1.3.10 // indirect
 	gorm.io/gorm v1.23.10 // indirect
 )

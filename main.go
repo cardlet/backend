@@ -7,6 +7,9 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"os"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
@@ -21,6 +24,7 @@ var users = []User{
 	},
 }
 
+var config Config
 var db *gorm.DB
 
 func homeLink(w http.ResponseWriter, r *http.Request) {
@@ -134,7 +138,25 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+func getConfig() Config {
+	f, err := os.Open("config.yml")
+	if err != nil {
+    	fmt.Println("Config file not found or no permissions!")
+	}
+	defer f.Close()
+
+	var cfg Config
+	decoder := yaml.NewDecoder(f)
+	err = decoder.Decode(&cfg)
+	if err != nil {
+    	fmt.Println("Failed to decode the config!")
+	}
+	return cfg
+}
+
 func main() {
+	config = getConfig()
+
 	var err error
 	db, err = gorm.Open(postgres.Open("postgres://postgres@localhost/test"), &gorm.Config{})
 
