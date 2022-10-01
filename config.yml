@@ -1,6 +1,5 @@
 # Server configurations
 server:
-  host: "localhost"
   port: 8000
 
 # Database credentials

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -26,5 +27,6 @@ func createRouter() {
 
 	handler := cors.Default().Handler(router)
 
-	log.Fatal(http.ListenAndServe(":8000", handler))
+	fmt.Println("Running at http://localhost:" + config.Server.Port)
+	log.Fatal(http.ListenAndServe(":" + config.Server.Port, handler))
 }
