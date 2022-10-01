@@ -8,20 +8,19 @@ type User struct {
 	Bio 		string 	`json:"bio"`
 	Pass		string 	`json:"password"`
 	Token		string 	`json:"token"`
-	Desks		[]Desk 	`json:"desks" gorm:"foreignKey:DeskRefer"`
 }
 
 type Desk struct {
 	gorm.Model
-	DeskRefer	uint   	`json:"desk_ref"`
+	UserID		uint   	`json:"userId"`
 	Name		string 	`json:"name"`
-	Cards		[]Card 	`json:"cards" gorm:"foreignKey:CardRefer"`
 }
 
 type Card struct {
 	gorm.Model
-	CardRefer	uint   	`json:"card_ref"`
-	Quest		string 	`json:"quest"`
+	UserID		uint	`json:"userId"`
+	DeskID		uint	`json:"deskId"`
+	Question	string 	`json:"quest"`
 	Answer		string 	`json:"answer"`
 }
 
