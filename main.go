@@ -35,10 +35,14 @@ func getOneUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func getAllFromDb() []User {
+	var users []User
+	db.Find(&users)
+	return users
+}
+
 func getAllUsers(w http.ResponseWriter, r *http.Request) {
-	dbUsers := db.Find(&User{})
-	fmt.Println(dbUsers)
-	json.NewEncoder(w).Encode(users)
+	json.NewEncoder(w).Encode(getAllFromDb())
 }
 
 func updateUser(w http.ResponseWriter, r *http.Request) {
@@ -132,13 +136,19 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	var err error
-	db, err = gorm.Open(postgres.Open("postgres://postgress@localhost/test"), &gorm.Config{})
+	db, err = gorm.Open(postgres.Open("postgres://postgres@localhost/test"), &gorm.Config{})
 
 	if err != nil {
 		panic("failed to connect database")
 	  }
 	
 	db.AutoMigrate(&User{})	
+	db.Create(&User{
+		Name: "Zweiter",
+		Bio:  "Ne",
+		Pass: "",
+		Token: GenerateSecureToken(20),
+	})
 
 	createRouter()
 }

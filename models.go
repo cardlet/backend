@@ -7,18 +7,18 @@ type User struct {
 	Name 	string `json:"name"`
 	Bio 	string `json:"bio"`
 	Pass	string `json:"password"`
-	Token	string
-	Desks	[]Desk `json:"desks"`
+	Token	string `json:"token"`
+	Desks	[]Desk `json:"desks" gorm:"-"`
 }
 
 type Desk struct {
 	gorm.Model
 	Name	string `json:"name"`
-	Cards	[]Card `json:"cards"`
+	Cards	[]Card `json:"cards" gorm:"-"`
 }
 
 type Card struct {
 	gorm.Model
-	Quest	string	`json:"quest"`
-	Answer	string	`json:"answer"`
+	Quest	string `json:"quest"`
+	Answer	string `json:"answer"`
 }
