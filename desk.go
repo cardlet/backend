@@ -30,8 +30,6 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-
-
 func getAllDesks(w http.ResponseWriter, r *http.Request) {
 	var desks []Desk
 	db.Find(&desks)

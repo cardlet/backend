@@ -30,6 +30,8 @@ func createRouter() {
 	router.HandleFunc("/users", getAllUsers).Methods("GET")
 	router.HandleFunc("/users/{id}", getOneUser).Methods("GET")
 
+	router.Use(contentTypeApplicationJsonMiddleware)
+
 	handler := cors.Default().Handler(router)
 
 	fmt.Println("Running at http://localhost:" + config.Server.Port)
