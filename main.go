@@ -14,7 +14,7 @@ var config Config
 var db *gorm.DB
 
 func homeLink(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "API is online")
+	createMessageResponse(w, "API is online")
 }
 
 func getConfig() Config {

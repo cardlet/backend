@@ -30,8 +30,12 @@ type Config struct {
     } `yaml:"server"`
 
     Database struct {
-        Username	 string `yaml:"user"`
+        Username	string `yaml:"user"`
         Password 	string 	`yaml:"pass"`
 		Name 		string 	`yaml:"name"`
     } `yaml:"database"`
+}
+
+type Message struct {
+	Message		string `json:"message"`
 }

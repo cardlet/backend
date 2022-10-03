@@ -33,7 +33,7 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 func getAllDesks(w http.ResponseWriter, r *http.Request) {
 	var desks []Desk
 	db.Find(&desks)
-	json.NewEncoder(w).Encode(desks)
+	createJsonResponse(w, desks)
 }
 
 func getDesksByUser(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +45,7 @@ func getDesksByUser(w http.ResponseWriter, r *http.Request) {
 	}
 	db.Find(&desks, &sampleDesk)
 
-	json.NewEncoder(w).Encode(desks)
+	createJsonResponse(w, desks)
 }
 
 func insertCard(w http.ResponseWriter, r *http.Request) {

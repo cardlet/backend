@@ -17,14 +17,10 @@ func getOneUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func getAllFromDb() []User {
+func getAllUsers(w http.ResponseWriter, r *http.Request) {
 	var users []User
 	db.Find(&users)
-	return users
-}
-
-func getAllUsers(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(getAllFromDb())
+	createJsonResponse(w, users)
 }
 
 func updateUser(w http.ResponseWriter, r *http.Request) {
@@ -77,7 +73,7 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 
-	json.NewEncoder(w).Encode(newUser.Token)
+	createMessageResponse(w, newUser.Token)
 }
 
 func loginUser(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +82,7 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Access denied")
 		return
 	}
-	json.NewEncoder(w).Encode(user)
+	createJsonResponse(w, user)
 }
 
 func validateUser(r *http.Request) (*User, bool) {
