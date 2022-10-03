@@ -34,6 +34,8 @@ func createRouter() {
 
 	handler := cors.Default().Handler(router)
 
-	fmt.Println("Running at http://localhost:" + config.Server.Port)
-	log.Fatal(http.ListenAndServe(":" + config.Server.Port, handler))
+	port := config["SERVER_PORT"].String()
+
+	fmt.Println("Running at http://localhost:" + port)
+	log.Fatal(http.ListenAndServe(":" + port, handler))
 }

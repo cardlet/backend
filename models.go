@@ -24,18 +24,6 @@ type Card struct {
 	Answer		string 	`json:"answer"`
 }
 
-type Config struct {
-    Server struct {
-        Port 	string 	`yaml:"port"`
-    } `yaml:"server"`
-
-    Database struct {
-        Username	string `yaml:"user"`
-        Password 	string 	`yaml:"pass"`
-		Name 		string 	`yaml:"name"`
-    } `yaml:"database"`
-}
-
 type Message struct {
 	Message		string `json:"message"`
 }
