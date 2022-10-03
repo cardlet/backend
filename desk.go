@@ -20,7 +20,7 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "Kindly enter data with the user title and description only in order to update")
+		createErrorResponse(w, "Kindly enter data with the user title and description only in order to update")
 	}
 
 	json.Unmarshal(reqBody, &desk)
