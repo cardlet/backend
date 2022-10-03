@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/cardlet/obj"
 	"github.com/gorilla/mux"
 )
 
@@ -16,7 +17,7 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var desk Desk
+	var desk obj.Desk
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -31,7 +32,7 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAllDesks(w http.ResponseWriter, r *http.Request) {
-	var desks []Desk
+	var desks []obj.Desk
 	db.Find(&desks)
 	createJsonResponse(w, desks)
 }
@@ -39,8 +40,8 @@ func getAllDesks(w http.ResponseWriter, r *http.Request) {
 func getDesksByUser(w http.ResponseWriter, r *http.Request) {
 	userId, _ := strconv.ParseUint(mux.Vars(r)["id"], 10, 32)
 
-	var desks []Desk
-	sampleDesk := Desk{
+	var desks []obj.Desk
+	sampleDesk := obj.Desk{
 		UserID: uint(userId),
 	}
 	db.Find(&desks, &sampleDesk)
@@ -58,7 +59,7 @@ func insertCard(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, "Kindly enter data with the user title and description only in order to update")
 	}
-	var card Card
+	var card obj.Card
 	json.Unmarshal(reqBody, &card)
 	card.UserID = user.ID
 

@@ -1,9 +1,10 @@
-package main
+package api
 
 import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/cardlet/obj"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -13,7 +14,7 @@ func createJsonResponse(w http.ResponseWriter, resp any) {
 
 func createMessageResponse(w http.ResponseWriter, msg string) {
 	json.NewEncoder(w).Encode(
-		Message {
+		obj.Message {
 			Message: msg,
 		},
 	)
@@ -21,7 +22,7 @@ func createMessageResponse(w http.ResponseWriter, msg string) {
 
 func createErrorResponse(w http.ResponseWriter, msg string) {
 	json.NewEncoder(w).Encode(
-		ErrorMessage {
+		obj.ErrorMessage {
 			Error: msg,
 		},
 	)
@@ -29,7 +30,7 @@ func createErrorResponse(w http.ResponseWriter, msg string) {
 
 func createTokenResponse(w http.ResponseWriter, token string) {
 	json.NewEncoder(w).Encode(
-		TokenResponse {
+		obj.TokenResponse {
 			Token: token,
 		},
 	)

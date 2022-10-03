@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"encoding/hex"
@@ -7,17 +7,18 @@ import (
 	"math/rand"
 	"net/http"
 
+	"github.com/cardlet/obj"
 	"github.com/gorilla/mux"
 )
 
 func getOneUser(w http.ResponseWriter, r *http.Request) {
-	var user User
+	var user obj.User
 	db.Find(&user, "ID = ?", mux.Vars(r)["id"])
 	json.NewEncoder(w).Encode(user)
 }
 
 func getAllUsers(w http.ResponseWriter, r *http.Request) {
-	var users []User
+	var users []obj.User
 	db.Find(&users)
 	createJsonResponse(w, users)
 }
@@ -28,7 +29,7 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var updatedUser User
+	var updatedUser obj.User
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -60,7 +61,7 @@ func GenerateSecureToken(length int) string {
 }
 
 func registerUser(w http.ResponseWriter, r *http.Request) {
-	var newUser User
+	var newUser obj.User
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		createErrorResponse(w, "Kindly enter data with the user title and description only in order to update")
@@ -69,7 +70,7 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &newUser)
 
 	var nameTaken bool
-	db.Model(&User{}).
+	db.Model(&obj.User{}).
 	Select("count(*) > 0").
 	Select("Name = ?", newUser.Name).
 	Find(&nameTaken)
@@ -94,7 +95,7 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginUser(w http.ResponseWriter, r *http.Request) {
-	var user User
+	var user obj.User
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		createErrorResponse(w, "Kindly enter data with the user title and description only in order to update")
@@ -103,7 +104,7 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &user)
 
 	var nameTaken bool
-	db.Model(&User{}).
+	db.Model(&obj.User{}).
 	Select("count(*) > 0").
 	Select("Name = ?", user.Name).
 	Find(&nameTaken)
@@ -113,7 +114,7 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var dbUser User
+	var dbUser obj.User
 	db.First(&dbUser, "Name = ?", user.Name)
 
 	if !CheckPasswordHash(user.Pass, dbUser.Pass) {
@@ -123,9 +124,9 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 	createTokenResponse(w, dbUser.Token)
 }
 
-func validateUser(r *http.Request) (*User, bool) {
+func validateUser(r *http.Request) (*obj.User, bool) {
 	var token = r.Header.Get("x-access-token")
-	var user User
+	var user obj.User
 	db.First(&user, "Token = ?", token)
 	if &user != nil {
 		return &user, true

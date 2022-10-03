@@ -1,4 +1,4 @@
-module main
+module github.com/cardlet
 
 go 1.19
 

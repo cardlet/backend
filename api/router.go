@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -9,7 +9,11 @@ import (
 	"github.com/rs/cors"
 )
 
-func createRouter() {
+func homeLink(w http.ResponseWriter, r *http.Request) {
+	createMessageResponse(w, "API is online")
+}
+
+func CreateRouter() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/", homeLink)
