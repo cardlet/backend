@@ -33,7 +33,6 @@ func createTokenResponse(w http.ResponseWriter, token string) {
 			Token: token,
 		},
 	)
-	w.WriteHeader(http.StatusOK)
 }
 
 func HashPassword(password string) (string, error) {

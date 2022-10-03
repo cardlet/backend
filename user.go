@@ -68,12 +68,17 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	
 	json.Unmarshal(reqBody, &newUser)
 
-	var nameUser User
-	result := db.First(&nameUser, "Name = ?", newUser.Name)
+	var nameTaken bool
+	_ = db.Model(&User{}).
+	Select("count(*) > 0").
+	Select("Name = ?", newUser.Name).
+	Find(&nameTaken).
+	Error
 
 	// Name already exists
-	if result.Error == nil {
+	if nameTaken {
 		createErrorResponse(w, "Username already taken!")
+		return
 	}
 
 	if newUser.Pass == "" {
@@ -85,8 +90,6 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 
 	newUser.Token = GenerateSecureToken(20)
 	db.Create(&newUser)
-
-	w.WriteHeader(http.StatusCreated)
 
 	createTokenResponse(w, newUser.Token)
 }
