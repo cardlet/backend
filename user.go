@@ -69,11 +69,10 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &newUser)
 
 	var nameTaken bool
-	_ = db.Model(&User{}).
+	db.Model(&User{}).
 	Select("count(*) > 0").
 	Select("Name = ?", newUser.Name).
-	Find(&nameTaken).
-	Error
+	Find(&nameTaken)
 
 	// Name already exists
 	if nameTaken {
@@ -102,6 +101,17 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	json.Unmarshal(reqBody, &user)
+
+	var nameTaken bool
+	db.Model(&User{}).
+	Select("count(*) > 0").
+	Select("Name = ?", user.Name).
+	Find(&nameTaken)
+
+	if !nameTaken {
+		createErrorResponse(w, "User doesn't exist!")
+		return
+	}
 
 	var dbUser User
 	db.First(&dbUser, "Name = ?", user.Name)

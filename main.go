@@ -44,13 +44,7 @@ func main() {
 		panic("failed to connect database")
 	  }
 	
-	db.AutoMigrate(&User{}, &Desk{}, &Card{})	
-	db.Create(&User{
-		Name: "Zweiter",
-		Bio:  "Ne",
-		Pass: "",
-		Token: "1",
-	})
+	db.AutoMigrate(&User{}, &Desk{}, &Card{})
 
 	createRouter()
 }
