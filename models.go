@@ -39,3 +39,7 @@ type Config struct {
 type Message struct {
 	Message		string `json:"message"`
 }
+
+type ErrorMessage struct {
+	Error		string `json:"error"`
+}

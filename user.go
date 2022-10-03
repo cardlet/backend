@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -33,7 +32,7 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "Kindly enter data with the user title and description only in order to update")
+		createErrorResponse(w, "Kindly enter data with the user title and description only in order to update")
 	}
 	json.Unmarshal(reqBody, &updatedUser)
 
@@ -64,25 +63,51 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	var newUser User
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "Kindly enter data with the user title and description only in order to update")
+		createErrorResponse(w, "Kindly enter data with the user title and description only in order to update")
 	}
 	
 	json.Unmarshal(reqBody, &newUser)
+
+	var nameUser User
+	result := db.First(&nameUser, "Name = ?", newUser.Name)
+
+	// Name already exists
+	if result.Error == nil {
+		createErrorResponse(w, "Username already taken!")
+	}
+
+	if newUser.Pass == "" {
+		createErrorResponse(w, "Invalid password!")
+		return
+	}
+
+	newUser.Pass, _ = HashPassword(newUser.Pass)
+
 	newUser.Token = GenerateSecureToken(20)
 	db.Create(&newUser)
 
 	w.WriteHeader(http.StatusCreated)
 
-	createMessageResponse(w, newUser.Token)
+	createTokenResponse(w, newUser.Token)
 }
 
 func loginUser(w http.ResponseWriter, r *http.Request) {
-	user, ok := validateUser(r)
-	if !ok {
-		fmt.Fprintf(w, "Access denied")
+	var user User
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		createErrorResponse(w, "Kindly enter data with the user title and description only in order to update")
+	}
+	
+	json.Unmarshal(reqBody, &user)
+
+	var dbUser User
+	db.First(&dbUser, "Name = ?", user.Name)
+
+	if !CheckPasswordHash(user.Pass, dbUser.Pass) {
+		createErrorResponse(w, "Access denied")
 		return
 	}
-	createJsonResponse(w, user)
+	createTokenResponse(w, dbUser.Token)
 }
 
 func validateUser(r *http.Request) (*User, bool) {
