@@ -18,7 +18,7 @@ func SetupConfig() {
 }
 
 func getDsn() string {
-	dsn := "host = " + config["DB_HOST"].String() + " dbname = " + config["DB_NAME"].String() + " user = " + config["DB_USER"].String() + " password = " + config["DB_PASSWORD"].String()
+	dsn := "host = " + config["DB_HOST"].String() + " dbname = " + config["DB_NAME"].String() + " user = " + config["DB_USER"].String() + " password = " + config["DB_PASSWORD"].String() + " port = " + config["DB_PORT"].String()
 	return dsn
 }
 
