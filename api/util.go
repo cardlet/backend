@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/cardlet/obj"
@@ -44,4 +45,18 @@ func HashPassword(password string) (string, error) {
 func CheckPasswordHash(password, hash string) bool {
     err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
     return err == nil
+}
+
+func UnmarshalJsonBody(w http.ResponseWriter, r *http.Request, obj interface{}) bool {
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		createErrorResponse(w, "Invalid response body")
+		return false
+	}
+	err = json.Unmarshal(reqBody, obj)
+	if err != nil {
+		createErrorResponse(w, "Invalid request")
+		return false
+	}
+	return true
 }

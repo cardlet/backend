@@ -1,8 +1,6 @@
 package api
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -18,12 +16,10 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 
 	var desk obj.Desk
 
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		createErrorResponse(w, "Kindly enter data with the user title and description only in order to update")
+	if !UnmarshalJsonBody(w, r, desk) {
+		return
 	}
 
-	json.Unmarshal(reqBody, &desk)
 	desk.UserID = user.ID
 	db.Create(&desk)
 

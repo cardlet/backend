@@ -3,8 +3,6 @@ package api
 import (
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 
@@ -31,12 +29,9 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var updatedUser obj.User
-
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		createErrorResponse(w, "Kindly enter data with the user title and description only in order to update")
+	if !UnmarshalJsonBody(w, r, &updatedUser) {
+		return
 	}
-	json.Unmarshal(reqBody, &updatedUser)
 
 	user.Bio = updatedUser.Bio
 	user.Name = updatedUser.Name
@@ -66,12 +61,9 @@ func GenerateSecureToken(length int) string {
 
 func registerUser(w http.ResponseWriter, r *http.Request) {
 	var newUser obj.User
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		createErrorResponse(w, "Kindly enter data with the user title and description only in order to update")
+	if !UnmarshalJsonBody(w, r, &newUser) {
+		return
 	}
-	
-	json.Unmarshal(reqBody, &newUser)
 
 	var nameTaken bool
 	db.Model(&obj.User{}).
@@ -100,12 +92,9 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 
 func loginUser(w http.ResponseWriter, r *http.Request) {
 	var user obj.User
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		createErrorResponse(w, "Kindly enter data with the user title and description only in order to update")
+	if !UnmarshalJsonBody(w, r, &user) {
+		return
 	}
-	
-	json.Unmarshal(reqBody, &user)
 
 	var nameTaken bool
 	db.Model(&obj.User{}).
@@ -130,9 +119,10 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 
 func validateUser(r *http.Request) (*obj.User, bool) {
 	var token = r.Header.Get("Authorization")
-	fmt.Println("Authorization" + token)
+
 	var user obj.User
 	err := db.First(&user, "Token = ?", token).Error
+	
 	if err == nil {
 		return &user, true
 	}

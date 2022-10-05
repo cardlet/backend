@@ -1,9 +1,6 @@
 package api
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -17,12 +14,11 @@ func createCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Kindly enter data with the user title and description only in order to update")
-	}
 	var card obj.Card
-	json.Unmarshal(reqBody, &card)
+	if !UnmarshalJsonBody(w, r, &card) {
+		return
+	}
+
 	card.UserID = user.ID
 
 	db.Create(&card)
