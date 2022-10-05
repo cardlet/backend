@@ -2,10 +2,8 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/cardlet/obj"
-	"github.com/go-chi/chi/v5"
 )
 
 func createDesk(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +31,7 @@ func getAllDesks(w http.ResponseWriter, r *http.Request) {
 }
 
 func getDesksByUser(w http.ResponseWriter, r *http.Request) {
-	userId, _ := strconv.ParseUint(chi.URLParam(r, "id"), 10, 32)
+	userId := getUintParam(r, "userId")
 
 	var desks []obj.Desk
 	sampleDesk := obj.Desk{

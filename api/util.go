@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/cardlet/obj"
+	"github.com/go-chi/chi/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -38,7 +40,7 @@ func createTokenResponse(w http.ResponseWriter, token string) {
 }
 
 func HashPassword(password string) (string, error) {
-    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 4)
     return string(bytes), err
 }
 
@@ -59,4 +61,12 @@ func UnmarshalJsonBody(w http.ResponseWriter, r *http.Request, obj interface{}) 
 		return false
 	}
 	return true
+}
+
+func getUintParam(r *http.Request, key string) uint64 {
+	num, err := strconv.ParseUint(chi.URLParam(r, "deskId"), 10, 32)
+	if err != nil {
+		return 0
+	}
+	return num
 }

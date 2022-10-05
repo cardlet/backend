@@ -2,10 +2,8 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/cardlet/obj"
-	"github.com/go-chi/chi/v5"
 )
 
 func createCard(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +29,7 @@ func getAllCards(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCardsByUser(w http.ResponseWriter, r *http.Request) {
-	userId, _ := strconv.ParseUint(chi.URLParam(r, "id"), 10, 32)
+	userId := getUintParam(r, "userId")
 
 	var cards []obj.Card
 	sampleDesk := obj.Card{
@@ -43,7 +41,7 @@ func getCardsByUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCardsByDeskId(w http.ResponseWriter, r *http.Request) {
-	deskId, _ := strconv.ParseUint(chi.URLParam(r, "deskId"), 10, 32)
+	deskId := getUintParam(r, "deskId")
 	
 	var cards []obj.Card
 	sampleDesk := obj.Card{

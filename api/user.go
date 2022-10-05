@@ -122,7 +122,7 @@ func validateUser(r *http.Request) (*obj.User, bool) {
 
 	var user obj.User
 	err := db.First(&user, "Token = ?", token).Error
-	
+
 	if err == nil {
 		return &user, true
 	}
