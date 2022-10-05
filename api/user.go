@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -47,8 +48,11 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 func deleteUser(w http.ResponseWriter, r *http.Request) {
 	user, ok := validateUser(r)
 	if !ok {
+		createErrorResponse(w, "Authorization failed!")
 		return
 	}
+
+	createMessageResponse(w, "Success!")
 	db.Delete(&user, "Token = ?", user.Token)
 }
 
@@ -126,9 +130,10 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 
 func validateUser(r *http.Request) (*obj.User, bool) {
 	var token = r.Header.Get("Authorization")
+	fmt.Println("Authorization" + token)
 	var user obj.User
-	db.First(&user, "Token = ?", token)
-	if &user != nil {
+	err := db.First(&user, "Token = ?", token).Error
+	if err == nil {
 		return &user, true
 	}
 	return nil, false
