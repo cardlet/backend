@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -49,19 +48,3 @@ func getDesksByUser(w http.ResponseWriter, r *http.Request) {
 	createJsonResponse(w, desks)
 }
 
-func insertCard(w http.ResponseWriter, r *http.Request) {
-	user, ok := validateUser(r)
-	if !ok {
-		return
-	}
-
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Kindly enter data with the user title and description only in order to update")
-	}
-	var card obj.Card
-	json.Unmarshal(reqBody, &card)
-	card.UserID = user.ID
-
-	db.Create(&card)
-}

@@ -37,15 +37,20 @@ func CreateRouter() {
 	router.Patch("/user/update", updateUser)
 	router.Delete("/user/delete", deleteUser)
 
+	// Public routes
+	router.Get("/users", getAllUsers)
+	router.Get("/users/{id}", getOneUser)
+
 	// Desk routes
 	router.Post("/desk/create", createDesk)
 	router.Get("/desks", getAllDesks)
 	router.Get("/desks/{id}", getDesksByUser)
-	router.Post("/desk/insert", insertCard)
 
-	// Public routes
-	router.Get("/users", getAllUsers)
-	router.Get("/users/{id}", getOneUser)
+	// Card routes
+	router.Post("/card/create", createCard)
+	router.Get("/cards", getAllCards)
+	router.Get("/cards/{id}", getCardsByUser)
+	router.Get("/user/cards/{id}", getCardsByDeskId)
 
 	port := config["SERVER_PORT"].String()
 
