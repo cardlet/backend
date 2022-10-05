@@ -125,7 +125,7 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func validateUser(r *http.Request) (*obj.User, bool) {
-	var token = r.Header.Get("x-access-token")
+	var token = r.Header.Get("Authorization")
 	var user obj.User
 	db.First(&user, "Token = ?", token)
 	if &user != nil {
