@@ -3,7 +3,7 @@ module github.com/cardlet
 go 1.19
 
 require (
-	github.com/gorilla/mux v1.8.0
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/rs/cors v1.8.2
 	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be
 	gorm.io/driver/postgres v1.3.10

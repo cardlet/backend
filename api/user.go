@@ -8,12 +8,12 @@ import (
 	"net/http"
 
 	"github.com/cardlet/obj"
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
 )
 
 func getOneUser(w http.ResponseWriter, r *http.Request) {
 	var user obj.User
-	db.Find(&user, "ID = ?", mux.Vars(r)["id"])
+	db.Find(&user, "ID = ?", chi.URLParam(r, "id"))
 	json.NewEncoder(w).Encode(user)
 }
 

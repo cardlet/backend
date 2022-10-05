@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/cardlet/obj"
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
 )
 
 func createDesk(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +38,7 @@ func getAllDesks(w http.ResponseWriter, r *http.Request) {
 }
 
 func getDesksByUser(w http.ResponseWriter, r *http.Request) {
-	userId, _ := strconv.ParseUint(mux.Vars(r)["id"], 10, 32)
+	userId, _ := strconv.ParseUint(chi.URLParam(r, "id"), 10, 32)
 
 	var desks []obj.Desk
 	sampleDesk := obj.Desk{

@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
 	"github.com/rs/cors"
 )
 
@@ -14,27 +14,27 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateRouter() {
-	router := mux.NewRouter().StrictSlash(true)
+	router := chi.NewRouter()
+
+	router.Use(contentTypeApplicationJsonMiddleware)
 
 	router.HandleFunc("/", homeLink)
 
 	// User routes
-	router.HandleFunc("/user/login", loginUser).Methods("POST")
-	router.HandleFunc("/user/register", registerUser).Methods("POST")
-	router.HandleFunc("/user/update", updateUser).Methods("PATCH")
-	router.HandleFunc("/user/delete", deleteUser).Methods("DELETE")
+	router.Post("/user/login", loginUser)
+	router.Post("/user/register", registerUser)
+	router.Patch("/user/update", updateUser)
+	router.Delete("/user/delete", deleteUser)
 
 	// Desk routes
-	router.HandleFunc("/desk/create", createDesk).Methods("POST")
-	router.HandleFunc("/desks", getAllDesks).Methods("GET")
-	router.HandleFunc("/desks/{id}", getDesksByUser).Methods("GET")
-	router.HandleFunc("/desk/insert", insertCard).Methods("POST")
+	router.Post("/desk/create", createDesk)
+	router.Get("/desks", getAllDesks)
+	router.Get("/desks/{id}", getDesksByUser)
+	router.Post("/desk/insert", insertCard)
 
 	// Public routes
-	router.HandleFunc("/users", getAllUsers).Methods("GET")
-	router.HandleFunc("/users/{id}", getOneUser).Methods("GET")
-
-	router.Use(contentTypeApplicationJsonMiddleware)
+	router.Get("/users", getAllUsers)
+	router.Get("/users/{id}", getOneUser)
 
 	handler := cors.Default().Handler(router)
 
