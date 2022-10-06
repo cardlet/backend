@@ -32,28 +32,44 @@ func CreateRouter() {
 	router.HandleFunc("/", homeLink)
 
 	// User routes
-	router.Post("/user/login", loginUser)
-	router.Post("/user/register", registerUser)
-	router.Patch("/user/update", updateUser)
-	router.Delete("/user/delete", deleteUser)
+	router.Route("/user", UserRouter)
 
 	// Public routes
-	router.Get("/users", getAllUsers)
-	router.Get("/users/{id}", getOneUser)
+	router.Route("/users", PublicUserRouter)
 
 	// Desk routes
-	router.Post("/desk/create", createDesk)
-	router.Get("/desks", getAllDesks)
-	router.Get("/desks/{id}", getDesksByUser)
+	router.Route("/desks", DesksRouter)
 
 	// Card routes
-	router.Post("/card/create", createCard)
-	router.Get("/cards", getAllCards)
-	router.Get("/cards/{id}", getCardsByUser)
-	router.Get("/user/cards/{id}", getCardsByDeskId)
+	router.Route("/cards", CardsRouter)
 
 	port := config["SERVER_PORT"].String()
 
 	fmt.Println("Running at http://localhost:" + port)
 	log.Fatal(http.ListenAndServe(":" + port, router))
+}
+
+func UserRouter(r chi.Router) {
+	r.Post("/login", loginUser)
+	r.Post("/register", registerUser)
+	r.Patch("/update", updateUser)
+	r.Delete("/delete", deleteUser)
+}
+
+func PublicUserRouter(r chi.Router) {
+	r.Get("/", getAllUsers)
+	r.Get("/{id}", getOneUser)
+}
+
+func DesksRouter(r chi.Router) {
+	r.Get("/", getAllDesks)
+	r.Post("/create", createDesk)
+	r.Get("/{id}", getDesksByUser)
+}
+
+func CardsRouter(r chi.Router) {
+	r.Get("/", getAllCards)
+	r.Post("/create", createCard)
+	r.Get("/user/{id}", getCardsByDeskId)
+	r.Get("/{id}", getCardsByUser)
 }
