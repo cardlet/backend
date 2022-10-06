@@ -23,7 +23,7 @@ func getAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateUser(w http.ResponseWriter, r *http.Request) {
-	user, ok := validateUser(r)
+	user, ok := validateUser(w, r)
 	if !ok {
 		return
 	}
@@ -41,9 +41,8 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteUser(w http.ResponseWriter, r *http.Request) {
-	user, ok := validateUser(r)
+	user, ok := validateUser(w, r)
 	if !ok {
-		createErrorResponse(w, "Authorization failed!")
 		return
 	}
 
@@ -117,7 +116,7 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 	createTokenResponse(w, dbUser.Token)
 }
 
-func validateUser(r *http.Request) (*obj.User, bool) {
+func validateUser(w http.ResponseWriter, r *http.Request) (*obj.User, bool) {
 	var token = r.Header.Get("Authorization")
 
 	var user obj.User
@@ -126,5 +125,8 @@ func validateUser(r *http.Request) (*obj.User, bool) {
 	if err == nil {
 		return &user, true
 	}
+
+	createErrorResponse(w, "Invalid authorization token!")
+
 	return nil, false
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func createCard(w http.ResponseWriter, r *http.Request) {
-	user, ok := validateUser(r)
+	user, ok := validateUser(w, r)
 	if !ok {
 		return
 	}

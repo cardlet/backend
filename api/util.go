@@ -55,7 +55,7 @@ func UnmarshalJsonBody(w http.ResponseWriter, r *http.Request, obj interface{}) 
 		createErrorResponse(w, "Invalid response body")
 		return false
 	}
-	err = json.Unmarshal(reqBody, obj)
+	err = json.Unmarshal(reqBody, &obj)
 	if err != nil {
 		createErrorResponse(w, "Invalid request")
 		return false
