@@ -51,3 +51,22 @@ func getCardsByDeskId(w http.ResponseWriter, r *http.Request) {
 
 	createJsonResponse(w, cards)
 }
+
+func deleteCard(w http.ResponseWriter, r *http.Request) {
+	user, ok := validateUser(w, r)
+	if !ok {
+		return
+	}
+
+	var card obj.Card
+	cardId := getUintParam(r, "id")
+	db.Find(&card, "ID = ?", cardId)
+
+	if (card.UserID != user.ID) {
+		createErrorResponse(w, "No permissions to delete the card!")
+		return
+	}
+
+	db.Delete(&card)
+	createMessageResponse("Successfully deleted the card!")
+}
