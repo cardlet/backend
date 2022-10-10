@@ -2,7 +2,7 @@ package api
 
 import (
 	"net/http"
-
+	"fmt"
 	"github.com/cardlet/obj"
 )
 
@@ -14,7 +14,7 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 
 	var desk obj.Desk
 
-	if !UnmarshalJsonBody(w, r, desk) {
+	if !UnmarshalJsonBody(w, r, &desk) {
 		return
 	}
 
@@ -42,3 +42,21 @@ func getDesksByUser(w http.ResponseWriter, r *http.Request) {
 	createJsonResponse(w, desks)
 }
 
+func deleteDesk(w http.ResponseWriter, r *http.Request) {
+	user, ok := validateUser(w, r)
+	if !ok {
+		return
+	}
+
+	var desk obj.Desk
+	deskId := getUintParam(r, "id")
+	db.Find(&desk, "ID = ?", deskId)
+
+	if (desk.UserID != user.ID) {
+		createErrorResponse(w, "No permissions to delete the desk!")
+		return
+	}
+
+	db.Delete(&desk)
+	createMessageResponse("Successfully deleted the desk!")
+}

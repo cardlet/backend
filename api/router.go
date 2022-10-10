@@ -64,7 +64,8 @@ func PublicUserRouter(r chi.Router) {
 func DesksRouter(r chi.Router) {
 	r.Get("/", getAllDesks)
 	r.Post("/create", createDesk)
-	r.Get("/{id}", getDesksByUser)
+	r.Get("/{userId}", getDesksByUser)
+	r.Delete("/delete/{id}", deleteDesk)
 }
 
 func CardsRouter(r chi.Router) {
@@ -72,4 +73,5 @@ func CardsRouter(r chi.Router) {
 	r.Post("/create", createCard)
 	r.Get("/user/{id}", getCardsByDeskId)
 	r.Get("/{id}", getCardsByUser)
+	// r.Delete("/delete", deleteCard)
 }

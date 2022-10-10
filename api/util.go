@@ -64,7 +64,7 @@ func UnmarshalJsonBody(w http.ResponseWriter, r *http.Request, obj interface{}) 
 }
 
 func getUintParam(r *http.Request, key string) uint64 {
-	num, err := strconv.ParseUint(chi.URLParam(r, "deskId"), 10, 32)
+	num, err := strconv.ParseUint(chi.URLParam(r, key), 10, 32)
 	if err != nil {
 		return 0
 	}
