@@ -19,6 +19,8 @@ func createMessageResponse(w http.ResponseWriter, msg string) {
 	json.NewEncoder(w).Encode(
 		obj.Message {
 			Message: msg,
+			Success: true,
+			Ok: true,
 		},
 	)
 }
