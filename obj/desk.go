@@ -6,4 +6,5 @@ type Desk struct {
 	gorm.Model
 	UserID		uint   	`json:"userId"`
 	Name		string 	`json:"name"`
+	CardCount	uint	`json:"cardCount"`
 }

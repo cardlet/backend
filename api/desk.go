@@ -2,7 +2,7 @@ package api
 
 import (
 	"net/http"
-	"fmt"
+
 	"github.com/cardlet/obj"
 )
 
@@ -22,11 +22,16 @@ func createDesk(w http.ResponseWriter, r *http.Request) {
 	db.Create(&desk)
 
 	w.WriteHeader(http.StatusCreated)
+
+	createJsonResponse(w, desk)
 }
 
 func getAllDesks(w http.ResponseWriter, r *http.Request) {
 	var desks []obj.Desk
 	db.Find(&desks)
+
+	desks = DesksPlusCardCount(desks)
+
 	createJsonResponse(w, desks)
 }
 
@@ -39,6 +44,8 @@ func getDesksByUser(w http.ResponseWriter, r *http.Request) {
 	}
 	db.Find(&desks, &sampleDesk)
 
+	desks = DesksPlusCardCount(desks)
+
 	createJsonResponse(w, desks)
 }
 
@@ -49,14 +56,27 @@ func deleteDesk(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var desk obj.Desk
-	deskId := getUintParam(r, "id")
-	db.Find(&desk, "ID = ?", deskId)
+	sampleDesk := obj.Desk{}
+	sampleDesk.ID = uint(getUintParam(r, "id"))
 
-	if (desk.UserID != user.ID) {
+	db.Find(&desk, sampleDesk)
+
+	if desk.UserID != user.ID {
 		createErrorResponse(w, "No permissions to delete the desk!")
 		return
 	}
 
 	db.Delete(&desk)
-	createMessageResponse("Successfully deleted the desk!")
+	createMessageResponse(w, "Successfully deleted the desk!")
+}
+
+func DesksPlusCardCount(selectedDesks []obj.Desk) []obj.Desk {
+	desks := selectedDesks
+	for i := range desks {
+		var cards []obj.Card
+		sampleCard := obj.Card{DeskID: desks[i].ID}
+		db.Find(&cards, sampleCard)
+		desks[i].CardCount = uint(len(cards))
+	}
+	return desks
 }

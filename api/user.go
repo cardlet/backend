@@ -36,7 +36,7 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 	user.Bio = updatedUser.Bio
 	user.Name = updatedUser.Name
 	user.Pass = updatedUser.Pass
-	
+
 	db.Model(&user).Updates(user)
 }
 
@@ -47,15 +47,15 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	createMessageResponse(w, "Success!")
-	db.Delete(&user, "Token = ?", user.Token)
+	db.Delete(user)
 }
 
 func GenerateSecureToken(length int) string {
-    b := make([]byte, length)
-    if _, err := rand.Read(b); err != nil {
-        return ""
-    }
-    return hex.EncodeToString(b)
+	b := make([]byte, length)
+	if _, err := rand.Read(b); err != nil {
+		return ""
+	}
+	return hex.EncodeToString(b)
 }
 
 func registerUser(w http.ResponseWriter, r *http.Request) {
@@ -66,9 +66,9 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 
 	var nameTaken bool
 	db.Model(&obj.User{}).
-	Select("count(*) > 0").
-	Select("Name = ?", newUser.Name).
-	Find(&nameTaken)
+		Select("count(*) > 0").
+		Select("Name = ?", newUser.Name).
+		Find(&nameTaken)
 
 	// Name already exists
 	if nameTaken {
@@ -97,9 +97,9 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 
 	var nameTaken bool
 	db.Model(&obj.User{}).
-	Select("count(*) > 0").
-	Select("Name = ?", user.Name).
-	Find(&nameTaken)
+		Select("count(*) > 0").
+		Select("Name = ?", user.Name).
+		Find(&nameTaken)
 
 	if !nameTaken {
 		createErrorResponse(w, "User doesn't exist!")
@@ -117,10 +117,12 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func validateUser(w http.ResponseWriter, r *http.Request) (*obj.User, bool) {
-	var token = r.Header.Get("Authorization")
+	sampleUser := obj.User{
+		Token: r.Header.Get("Authorization"),
+	}
 
 	var user obj.User
-	err := db.First(&user, "Token = ?", token).Error
+	err := db.First(&user, sampleUser).Error
 
 	if err == nil {
 		return &user, true
