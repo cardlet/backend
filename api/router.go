@@ -18,14 +18,14 @@ func CreateRouter() {
 
 	router.Use(cors.Handler(cors.Options{
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
-		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedOrigins: []string{"https://*", "http://*"},
 		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
-	  }))
+	}))
 
 	router.Use(contentTypeApplicationJsonMiddleware)
 
@@ -46,7 +46,7 @@ func CreateRouter() {
 	port := config["SERVER_PORT"].String()
 
 	fmt.Println("Running at http://localhost:" + port)
-	log.Fatal(http.ListenAndServe(":" + port, router))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
 
 func UserRouter(r chi.Router) {
@@ -71,7 +71,7 @@ func DesksRouter(r chi.Router) {
 func CardsRouter(r chi.Router) {
 	r.Get("/", getAllCards)
 	r.Post("/create", createCard)
-	r.Get("/user/{id}", getCardsByDeskId)
-	r.Get("/{id}", getCardsByUser)
+	r.Get("/user", getCardsByUser)
+	r.Get("/{id}", getCardsByDeskId)
 	r.Delete("/delete/{id}", deleteCard)
 }

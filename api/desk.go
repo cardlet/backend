@@ -36,11 +36,15 @@ func getAllDesks(w http.ResponseWriter, r *http.Request) {
 }
 
 func getDesksByUser(w http.ResponseWriter, r *http.Request) {
-	userId := getUintParam(r, "userId")
+	user, ok := validateUser(w, r)
+
+	if !ok {
+		return
+	}
 
 	var desks []obj.Desk
 	sampleDesk := obj.Desk{
-		UserID: uint(userId),
+		UserID: uint(user.ID),
 	}
 	db.Find(&desks, &sampleDesk)
 
